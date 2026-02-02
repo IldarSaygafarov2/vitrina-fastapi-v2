@@ -5,15 +5,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
 from backend.app.config import config
-
 from infrastructure.database.repo.requests import RequestsRepo
-from tgbot.keyboards.admin.inline import (
-    advertisement_moderation_kb,
-    delete_advertisement_kb,
-)
+from tgbot.keyboards.admin.inline import advertisement_moderation_kb
 from tgbot.keyboards.user.inline import actual_checking_kb, is_price_actual_kb
 from tgbot.misc.user_states import AdvertisementRelevanceState
-from tgbot.templates.advertisement_creation import realtor_advertisement_completed_text
 from tgbot.templates.messages import advertisement_reminder_message
 from tgbot.utils import helpers
 
@@ -29,19 +24,6 @@ async def handle_check_actual(callback: CallbackQuery):
     )
 
 
-#
-# @router.callback_query(F.data.startswith("actual"))
-# async def react_to_advertisement_actual(call: CallbackQuery):
-#     """Если объявление является актуальным"""
-#     await call.answer()
-#
-#     advertisement_id = int(call.data.split(":")[-1])
-#     await call.message.edit_text(
-#         text="Изменилась ли цена данного объявления ?",
-#         reply_markup=is_price_actual_kb(advertisement_id),
-#     )
-#
-#
 @router.callback_query(F.data.startswith("price_changed"))
 async def react_to_advertisement_price_changed(call: CallbackQuery, state: FSMContext):
     """Если цена объявления поменялась."""
@@ -55,8 +37,6 @@ async def react_to_advertisement_price_changed(call: CallbackQuery, state: FSMCo
     )
 
 
-#
-#
 @router.message(AdvertisementRelevanceState.new_price)
 async def set_actual_price_for_advertisement(
     message: Message, repo: RequestsRepo, state: FSMContext
@@ -77,12 +57,13 @@ async def set_actual_price_for_advertisement(
     new_reminder_days = helpers.get_revminder_time_for_advertisement(operation_type)
 
     new_price = helpers.filter_digits(message.text)
+    new_reminder_time = advertisement.reminder_time + timedelta(days=new_reminder_days)
 
     updated_advertisement = await repo.advertisements.update_advertisement(
         advertisement_id=advertisement_id,
         price=int(new_price),
         new_price=int(new_price),
-        reminder_time=new_reminder_days,
+        reminder_time=advertisement.reminder_time + timedelta(days=new_reminder_days),
     )
 
     # подготавливаем медиа группу для отправки
