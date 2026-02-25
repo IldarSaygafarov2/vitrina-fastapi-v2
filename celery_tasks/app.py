@@ -2,6 +2,7 @@ from celery import Celery
 
 from backend.app.config import config
 from tgbot.utils.helpers import get_current_date
+from celery.schedules import crontab
 
 celery_v2_app = Celery(
     "dev_celery_tasks",
@@ -23,6 +24,6 @@ celery_v2_app.conf.beat_schedule = {
     "send_reminder": {
         "task": "celery_tasks.tasks.remind_agent_to_update_advertisement_by_date",
         "args": (get_current_date(),),
-        "schedule": 120.0,
+        "schedule": crontab(minute=0, hour="*/3"),
     }
 }
