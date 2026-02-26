@@ -24,6 +24,6 @@ celery_v2_app.conf.beat_schedule = {
     "send_reminder": {
         "task": "celery_tasks.tasks.remind_agent_to_update_advertisement_by_date",
         "args": (get_current_date(),),
-        "schedule": crontab(minute=0, hour="*/3"),
+        "schedule": 120.0,
     }
 }

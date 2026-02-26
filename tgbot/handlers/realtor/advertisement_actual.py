@@ -63,7 +63,7 @@ async def set_actual_price_for_advertisement(
         advertisement_id=advertisement_id,
         price=int(new_price),
         new_price=int(new_price),
-        reminder_time=advertisement.reminder_time + timedelta(days=new_reminder_days),
+        reminder_time=new_reminder_time,
     )
 
     # подготавливаем медиа группу для отправки

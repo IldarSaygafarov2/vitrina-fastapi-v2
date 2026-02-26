@@ -136,6 +136,7 @@ def remind_agent_to_update_advertisement_by_date(current_date: str):
         async with session_pool() as session:
             repo = RequestsRepo(session)
 
+        # await bot.send_message(chat_id=config.tg_bot.test_main_chat_id, text="test")
         result = await get_user_not_actual_advertisements_by_date(
             date=current_date, repo=repo
         )

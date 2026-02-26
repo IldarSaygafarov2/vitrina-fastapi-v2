@@ -238,14 +238,15 @@ async def process_moderation_confirm(
     )
 
     operation_type = advertisement.operation_type.value
+    reminder_days = get_revminder_time_for_advertisement(operation_type)
 
     if advertisement.reminder_time is None:
-        reminder_days = get_revminder_time_for_advertisement(operation_type)
-        reminder_days = (datetime.datetime.now() + datetime.timedelta(days=0)).date()
+        reminder_days = (
+            datetime.datetime.now() + datetime.timedelta(days=reminder_days)
+        ).date()
     else:
-        reminder_days_by_operation = 14 if operation_type == "Покупка" else 7
         reminder_days = advertisement.reminder_time + datetime.timedelta(
-            days=reminder_days_by_operation
+            days=reminder_days
         )
 
     await repo.advertisements.update_advertisement(
